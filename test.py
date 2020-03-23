@@ -67,7 +67,7 @@ def method2():
     
     startFrameIndex     = 0                                                     # Frame index that we will start from 
     endFrameIndex       = numOfFrames - 1                                       # Frame index that we will end at
-    captureRate         = 3                                                     # How frequently we will capture frames from a video
+    captureRate         = 1                                                     # How frequently we will capture frames from a video
     capturedFrameNumber = 0                                                     # Number of frames that have been captured so far
     frameIndex          = startFrameIndex                                       # Frame index that we want to go to
     
@@ -88,6 +88,35 @@ def method2():
             break
 
     vidCap.release()                                                            # Closes the video file (See source #7)
+
+
+def extractImages(videoFilePath, videoFileName, destinationPath, startFrameIndex, endFrameIndex, captureRate):
+    vidCap        = cv2.VideoCapture(videoFilePath)                             # Opens a video file for video capturing; (See source #1)
+    numOfFrames   = int(vidCap.get(cv2.CAP_PROP_FRAME_COUNT))                   # Gets the number of frames in a video file; (See sources #2, #3)
     
+    capturedFrameNumber = 0                                                     # Number of frames that have been captured so far
+    frameIndex          = startFrameIndex                                       # Frame index that we want to go to
+
+    while(frameIndex <= endFrameIndex):
+        vidCap.set(cv2.CAP_PROP_POS_FRAMES, frameIndex)                         # Sets the (0-based) index of the frame that is going to be captured (See source #4)
+        retVal, frame = vidCap.read()                                           # Grabs and returns the next video frame, and returns False if no frames were grabbed (See source #5)
+        
+        if retVal:                                                              # Check to see if a frame was successfully grabbed
+            fileName = destinationPath + "\\"    + \
+                       videoFileName   + "_"    + \
+                       str(capturedFrameNumber) + \
+                        '.jpg'                                                  # Create the path and filename that will be used to save the frame
+            print('Creating... ' + fileName + " " + str(frameIndex))
+            cv2.imwrite(fileName, frame)                                        # Save the frame as the given filename (See source #6)
+            capturedFrameNumber += 1                                            
+            frameIndex += captureRate                                           # Computes the index of the next frame that is to be captured
+        else:
+            break
+
+    vidCap.release()                                                            # Closes the video file (See source #7)
+
+
+
 if __name__ == '__main__':
-    method2()
+##    method2()
+    pass
