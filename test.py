@@ -104,7 +104,7 @@ def extractImages(videoFilePath, videoFileName, destinationPath, startFrameIndex
         if retVal:                                                              # Check to see if a frame was successfully grabbed
             fileName = destinationPath + "\\"    + \
                        videoFileName   + "_"    + \
-                       str(capturedFrameNumber) + \
+                       str('%04d' % capturedFrameNumber) + \
                         '.jpg'                                                  # Create the path and filename that will be used to save the frame
             print('Creating... ' + fileName + " " + str(frameIndex))
             cv2.imwrite(fileName, frame)                                        # Save the frame as the given filename (See source #6)
