@@ -1,5 +1,5 @@
 import pathlib
-import test
+import extractImages
 import shutil
 import csv
 
@@ -74,7 +74,7 @@ def generateTrainAndTestSets(rootPath, videoFileNamesInfo):
         destinationPath = str(destinationPath/videoFileNameInfo[1])
         videoFilePath = str(videoFileNameInfo[4])
         videoFileName = videoFileNameInfo[4].stem
-        test.extractImages(videoFilePath, videoFileName, destinationPath, 1, 1, 1)
+        extractImages.extractImages(videoFilePath, videoFileName, destinationPath, 1, 1, 1)
         numFrames = getNumFramesFromVideo(destinationPath, videoFileName)
         data.append([testOrTrain, videoFileNameInfo[1], videoFileName, numFrames])
     writeDataToCsv(data, rootPath)
