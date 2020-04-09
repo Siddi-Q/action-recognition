@@ -94,8 +94,8 @@ def writeDataToCsv(data, destinationPath):
     
 
 def main():
-    rootPath = pathlib.Path(r"D:\ActionRecognition")
-    ucfVideosPath = pathlib.Path(r"D:\ActionRecognition\UCF-101") #path to ucf-101 dataset
+    rootPath = pathlib.Path(r"/home/jupyter/action-recognition")
+    ucfVideosPath = pathlib.Path(r"https://storage.googleapis.com/action-recognition-dataset-1/UCF%20101%20MP4") #path to ucf-101 dataset
     numOfClasses = 1
     
     removeDirectories(rootPath)
