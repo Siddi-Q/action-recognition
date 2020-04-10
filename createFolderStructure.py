@@ -2,6 +2,13 @@ import pathlib
 import extractImages
 import shutil
 import csv
+from google.cloud import storage
+import requests
+from contextlib import closing
+import csv
+import codecs
+import os 
+import re
 
 # Removes directory at dirpath
 def removeDirectory(dirpath):
@@ -15,23 +22,40 @@ def removeDirectories(rootPath):
     removeDirectory(trainPath)
     removeDirectory(testPath)
 
-# Gets the class names
+# Gets the class names by GET request for .csv in GCS that contains all classnames
 def getClassNames(ucfVideosPath, numOfClasses):
-    res = ucfVideosPath.glob('*')
-    classNames = []
-    for item in res:
-        classNames.append(item.name)
+    #url = ucfVideosPath/"UCF_classnames.csv"
+    url = "https://storage.googleapis.com/action-recognition-dataset-1/UCF%20101%20MP4/UCF_classnames.csv"
+    with closing(requests.get(url, stream=True)) as r:
+        reader = csv.reader(codecs.iterdecode(r.iter_lines(), 'utf-8'), delimiter=',', quotechar='"')
+        #classNames is the list of all the rows items from the .csv
+        for classNames in reader: 
+            continue
     return classNames[:numOfClasses]
 
 def getVideoFilePaths(ucfVideosPath, classNames):
-    videoClassPaths = []
-    for i in classNames:
-        videoClassPaths.append(ucfVideosPath/i)
+    #get video paths from google cloud storage
+    bucket_name = "action-recognition-dataset-1"
+    storage_client = storage.Client()
     
-    allVideoFilePaths = []
-    for j in videoClassPaths:
-        videoPathsList = list(j.glob('*.avi'))
-        allVideoFilePaths.extend(videoPathsList)
+    #note: can't pass just the base bc they're files (.csv) in the bucket 
+    base="UCF 101 MP4/"
+    
+    #list to hold all the video names by classes
+    allVideoFilePaths =[]
+    videoNames = []
+    
+    for className in classNames:
+        blobs = storage_client.list_blobs(
+            bucket_name, prefix=base+className
+        )
+        for blob in blobs:
+            #use regex to remove prefix to obtain classname/video_names
+            videoName = re.sub(base, '', blob.name)
+            blobPath = pathlib.Path(videoName)
+            videoName = ucfVideosPath/blobPath
+            allVideoFilePaths.append(videoName)
+            
     return allVideoFilePaths
 
 def getVideoFileNames(allVideoFilePaths):

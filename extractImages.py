@@ -102,7 +102,8 @@ def extractImages(videoFilePath, videoFileName, destinationPath, startFrameIndex
         retVal, frame = vidCap.read()                                           # Grabs and returns the next video frame, and returns False if no frames were grabbed (See source #5)
         
         if retVal:                                                              # Check to see if a frame was successfully grabbed
-            fileName = destinationPath + "\\"    + \
+            #change to "\\" for local windows directory or "/" for GCS/Mac/Linux
+            fileName = destinationPath + "/"    + \
                        videoFileName   + "_"    + \
                        str('%04d' % capturedFrameNumber) + \
                         '.jpg'                                                  # Create the path and filename that will be used to save the frame
