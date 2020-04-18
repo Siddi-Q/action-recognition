@@ -28,7 +28,16 @@ class Data():
     def getNumClasses(self):
         return len(self.classes)
 
+    # returns a list of paths to frames for a video
+    @staticmethod
+    def getFramesForVideo(dataRow):
+        videoFilename = dataRow[2]
+        framesPath    = pathlib.Path(r"D:\ActionRecognition")/dataRow[0]/dataRow[1]
+        frames        = sorted(framesPath.glob(videoFilename + '*')) # sorted list so that the frames are in 'sequential' order
+        return frames
+
 ##if __name__ == '__main__':
-##    Data()
+##    d = Data()
+##    d.getFramesForVideo(d.data[0])
             
     
