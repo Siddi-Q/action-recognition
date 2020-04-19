@@ -1,5 +1,5 @@
-import pathlib
 import extractImages
+import pathlib
 import shutil
 import csv
 
@@ -8,19 +8,12 @@ def removeDirectory(dirpath):
     if dirpath.exists() and dirpath.is_dir():
         shutil.rmtree(dirpath)
 
-# Removes the Train and Test Directories
-def removeDirectories(rootPath):
-    trainPath = rootPath/'Train'
-    testPath = rootPath/'Test'
-    removeDirectory(trainPath)
-    removeDirectory(testPath)
-
 # Gets the class names
 def getClassNames(ucfVideosPath, numOfClasses):
-    res = ucfVideosPath.glob('*')
-    classNames = []
-    for item in res:
-        classNames.append(item.name)
+    directories = ucfVideosPath.glob('*')
+    classNames  = []
+    for directory in directories:
+        classNames.append(directory.name)
     return classNames[:numOfClasses]
 
 def getVideoFilePaths(ucfVideosPath, classNames):
@@ -50,30 +43,36 @@ def appendVideoFilePath(allVideoFilePaths, videoFileNamesInfo):
     for i in range(len(allVideoFilePaths)):
         videoFileNamesInfo[i].append(allVideoFilePaths[i])
 
-def createDirectories(rootPath, classNames):
-    imageDirectories = []
-    imageDirectories.append(rootPath/'Train')
-    imageDirectories.append(rootPath/'Test')
-    for directory in imageDirectories:
-        if not directory.exists():
-            directory.mkdir()
-        for className in classNames:
-            if not (directory/className).exists():
-                (directory/className).mkdir()
+def createDirectory(dirpath):
+    if not dirpath.exists():
+        dirpath.mkdir()
 
-def generateTrainAndTestSets(rootPath, videoFileNamesInfo):
+def createDirectories(dirpath, classNames):
+    createDirectory(dirpath)
+    
+    directories = []
+    directories.append(dirpath/'Train')
+    directories.append(dirpath/'Test')
+    
+    for directory in directories:
+        createDirectory(directory)
+        for className in classNames:
+            createDirectory(directory/className)
+
+def generateTrainAndTestFrames(rootPath, framesPath, videoFileNamesInfo):
     data = []
     for videoFileNameInfo in videoFileNamesInfo:
         if videoFileNameInfo[2] > 'g07':
-            destinationPath = rootPath/'Train'
+            destinationPath = framesPath/'Train'
             testOrTrain = "Train"
         else:
-            destinationPath = rootPath/'Test'
+            destinationPath = framesPath/'Test'
             testOrTrain = "Test"
             
         destinationPath = str(destinationPath/videoFileNameInfo[1])
-        videoFilePath = str(videoFileNameInfo[4])
-        videoFileName = videoFileNameInfo[4].stem
+        videoFilePath   = str(videoFileNameInfo[4])
+        videoFileName   = videoFileNameInfo[4].stem
+        
         extractImages.extractImages(videoFilePath, videoFileName, destinationPath, 1, 1, 1)
         numFrames = getNumFramesFromVideo(destinationPath, videoFileName)
         data.append([testOrTrain, videoFileNameInfo[1], videoFileName, numFrames])
@@ -81,7 +80,7 @@ def generateTrainAndTestSets(rootPath, videoFileNamesInfo):
 
 def getNumFramesFromVideo(destinationPath, videoFileName):
     partialPath = pathlib.Path(destinationPath)
-    items = list(partialPath.glob(videoFileName + '*.jpg'))
+    items       = list(partialPath.glob(videoFileName + '*.jpg'))
     return len(items)
 
 def writeDataToCsv(data, destinationPath):
@@ -94,18 +93,24 @@ def writeDataToCsv(data, destinationPath):
     
 
 def main():
-    rootPath = pathlib.Path(r"D:\ActionRecognition")
-    ucfVideosPath = pathlib.Path(r"D:\ActionRecognition\UCF-101") #path to ucf-101 dataset
-    numOfClasses = 1
+    rootPath      = pathlib.Path(r"D:\ActionRecognition") # Top-level ("root") path
+    ucfVideosPath = rootPath/'UCF-101'                    # path to ucf-101 dataset
+    framesPath    = rootPath/'Frames'                     # path to Frames Data Directory
+    sequencesPath = rootPath/'Sequences'                  # path to Sequences Data Directory
+    numOfClasses  = 3
     
-    removeDirectories(rootPath)
-    classNames = getClassNames(ucfVideosPath, numOfClasses)
-    allVideoFilePaths = getVideoFilePaths(ucfVideosPath, classNames)
-    videoFileNames = getVideoFileNames(allVideoFilePaths)
+    removeDirectory(framesPath)
+    removeDirectory(sequencesPath)
+    
+    classNames         = getClassNames(ucfVideosPath, numOfClasses)
+    allVideoFilePaths  = getVideoFilePaths(ucfVideosPath, classNames)
+    videoFileNames     = getVideoFileNames(allVideoFilePaths)
     videoFileNamesInfo = getVideoFileNamesInfo(videoFileNames)
+    
     appendVideoFilePath(allVideoFilePaths, videoFileNamesInfo)
-    createDirectories(rootPath, classNames)
-    generateTrainAndTestSets(rootPath, videoFileNamesInfo)
+    createDirectories(framesPath, classNames)
+    createDirectories(sequencesPath, classNames)
+    generateTrainAndTestFrames(rootPath, framesPath, videoFileNamesInfo)
 
 if __name__ == '__main__':
-    main() 
+    main()
