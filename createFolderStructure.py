@@ -73,7 +73,10 @@ def generateTrainAndTestFrames(rootPath, framesPath, videoFileNamesInfo):
         videoFilePath   = str(videoFileNameInfo[4])
         videoFileName   = videoFileNameInfo[4].stem
         
-        extractImages.extractImages(videoFilePath, videoFileName, destinationPath, 1, 1, 1)
+##        extractImages.extractImages(videoFilePath, videoFileName, destinationPath, 1, 1, 1)
+        extractImages.extractFrames(videoFilePath, videoFileName, destinationPath, 20, 3)
+
+        
         numFrames = getNumFramesFromVideo(destinationPath, videoFileName)
         data.append([testOrTrain, videoFileNameInfo[1], videoFileName, numFrames])
     writeDataToCsv(data, rootPath)
