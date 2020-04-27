@@ -32,12 +32,11 @@ class Data():
     @staticmethod
     def getFramesForVideo(dataRow):
         videoFilename = dataRow[2]
-        framesPath    = pathlib.Path(r"/home/jupyter/action-recognition")/dataRow[0]/dataRow[1]
+        framesPath    = pathlib.Path(r"D:\ActionRecognition\Frames")/dataRow[0]/dataRow[1]
         frames        = sorted(framesPath.glob(videoFilename + '*')) # sorted list so that the frames are in 'sequential' order
         return frames
 
 ##if __name__ == '__main__':
 ##    d = Data()
-##    d.getFramesForVideo(d.data[0])
-            
+##    frames = d.getFramesForVideo(d.data[0])
     
