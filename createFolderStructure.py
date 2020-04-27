@@ -1,4 +1,4 @@
-import extractImages
+import extractFrames
 import pathlib
 import shutil
 import csv
@@ -77,7 +77,7 @@ def generateTrainAndTestFrames(rootPath, framesPath, videoFileNamesInfo):
         videoFilePath   = str(videoFileNameInfo[4])
         videoFileName   = videoFileNameInfo[4].stem
         
-        extractImages.extractFrames(videoFilePath, videoFileName, destinationPath, 2, 3)
+        extractFrames.extractFrames(videoFilePath, videoFileName, destinationPath, 2, 3)
         
         numFrames = getNumFramesFromVideo(destinationPath, videoFileName)
         data.append([datasetType, videoFileNameInfo[1], videoFileName, numFrames])
