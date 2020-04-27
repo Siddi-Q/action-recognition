@@ -52,6 +52,7 @@ def createDirectories(dirpath, classNames):
     
     directories = []
     directories.append(dirpath/'Train')
+    directories.append(dirpath/'Validation')
     directories.append(dirpath/'Test')
     
     for directory in directories:
@@ -62,23 +63,24 @@ def createDirectories(dirpath, classNames):
 def generateTrainAndTestFrames(rootPath, framesPath, videoFileNamesInfo):
     data = []
     for videoFileNameInfo in videoFileNamesInfo:
-        if videoFileNameInfo[2] > 'g07':
+        if videoFileNameInfo[2] > 'g10':
             destinationPath = framesPath/'Train'
-            testOrTrain = "Train"
+            datasetType     = "Train"
+        elif videoFileNameInfo[2] > 'g05' and videoFileNameInfo[2] < 'g11':
+            destinationPath = framesPath/'Validation'
+            datasetType     = "Validation"
         else:
             destinationPath = framesPath/'Test'
-            testOrTrain = "Test"
+            datasetType     = "Test"
             
         destinationPath = str(destinationPath/videoFileNameInfo[1])
         videoFilePath   = str(videoFileNameInfo[4])
         videoFileName   = videoFileNameInfo[4].stem
         
-##        extractImages.extractImages(videoFilePath, videoFileName, destinationPath, 1, 1, 1)
-        extractImages.extractFrames(videoFilePath, videoFileName, destinationPath, 20, 3)
-
+        extractImages.extractFrames(videoFilePath, videoFileName, destinationPath, 2, 3)
         
         numFrames = getNumFramesFromVideo(destinationPath, videoFileName)
-        data.append([testOrTrain, videoFileNameInfo[1], videoFileName, numFrames])
+        data.append([datasetType, videoFileNameInfo[1], videoFileName, numFrames])
     writeDataToCsv(data, rootPath)
 
 def getNumFramesFromVideo(destinationPath, videoFileName):
@@ -117,3 +119,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
