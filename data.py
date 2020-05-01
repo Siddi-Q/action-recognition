@@ -22,12 +22,23 @@ class Data():
             dataClass = row[1]
             if dataClass not in classes:
                 classes.append(dataClass)
+        classes.sort()
         return classes
 
     # returns the number of classes
     def getNumClasses(self):
         return len(self.classes)
 
+    def getClassIndex(self, className):
+        return self.classes.index(className)
+
+    def getDatasetCount(self, datasetType):
+        count = 0
+        for row in self.data:
+            if row[0] == datasetType:
+                count += 1
+        return count
+    
     # returns a list of paths to frames for a video
     @staticmethod
     def getFramesForVideo(dataRow):
@@ -38,5 +49,4 @@ class Data():
 
 ##if __name__ == '__main__':
 ##    d = Data()
-##    frames = d.getFramesForVideo(d.data[0])
-    
+##    print(d.getDatasetCount("Test"))
