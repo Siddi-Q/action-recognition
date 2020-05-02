@@ -24,8 +24,11 @@ class Data():
                 classes.append(dataClass)
         classes.sort()
         return classes
-
+    
     # returns the number of classes
+    def getNumClasses(self):
+        return len(self.classes)
+
     def getClassIndex(self, className):
         return self.classes.index(className)
 
