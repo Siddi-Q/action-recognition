@@ -1,10 +1,8 @@
-import directoryFunctions ####
+import directoryFunctions
 import extractFrames
 import pathlib
 import shutil
 import csv
-
-#### removed removeDirectory function
 
 # Gets the class names
 def getClassNames(ucfVideosPath, numOfClasses):
@@ -41,9 +39,6 @@ def appendVideoFilePath(allVideoFilePaths, videoFileNamesInfo):
     for i in range(len(allVideoFilePaths)):
         videoFileNamesInfo[i].append(allVideoFilePaths[i])
 
-#### removed createDirectory function
-
-#### removed some lines
 def createDirectories(dirpath, classNames):
     directories = []
     directories.append(dirpath/'Train')
@@ -52,7 +47,7 @@ def createDirectories(dirpath, classNames):
     
     for directory in directories:
         for className in classNames:
-            createDirectory(directory/className)
+            directoryFunctions.createDirectory(directory/className)
 
 def generateTrainAndTestFrames(rootPath, framesPath, videoFileNamesInfo):
     data = []

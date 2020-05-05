@@ -11,5 +11,3 @@ def createDirectory(dirpath):
     if not dirpath.exists():
         dirpath.mkdir(parents = True)
 
-
-#### this whole file
