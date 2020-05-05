@@ -1,3 +1,4 @@
+import directoryFunctions
 import extractFrames
 import pathlib
 import shutil
@@ -9,11 +10,6 @@ import csv
 import codecs
 import os 
 import re
-
-# Removes directory at dirpath
-def removeDirectory(dirpath):
-    if dirpath.exists() and dirpath.is_dir():
-        shutil.rmtree(dirpath)
 
 # Gets the class names
 def getClassNames(ucfVideosPath, numOfClasses):
@@ -67,22 +63,15 @@ def appendVideoFilePath(allVideoFilePaths, videoFileNamesInfo):
     for i in range(len(allVideoFilePaths)):
         videoFileNamesInfo[i].append(allVideoFilePaths[i])
 
-def createDirectory(dirpath):
-    if not dirpath.exists():
-        dirpath.mkdir()
-
 def createDirectories(dirpath, classNames):
-    createDirectory(dirpath)
-    
     directories = []
     directories.append(dirpath/'Train')
     directories.append(dirpath/'Test')
     directories.append(dirpath/'Validation')
     
     for directory in directories:
-        createDirectory(directory)
         for className in classNames:
-            createDirectory(directory/className)
+            directoryFunctions.createDirectory(directory/className)
 
 def generateTrainAndTestFrames(rootPath, framesPath, videoFileNamesInfo):
     data = []
@@ -128,10 +117,10 @@ def main():
     sequencesPath = rootPath/'Sequences'                  # path to Sequences Data Directory
     numOfClasses  = 3
     
-    removeDirectory(framesPath)
-    removeDirectory(sequencesPath)
+    directoryFunctions.removeDirectory(framesPath)
+    directoryFunctions.removeDirectory(sequencesPath)
+    
     classNames         = getClassNames(ucfVideosPath, numOfClasses)
-    print(classNames[0])
     allVideoFilePaths  = getVideoFilePaths(ucfVideosPath, classNames)
     videoFileNames     = getVideoFileNames(allVideoFilePaths)
     videoFileNamesInfo = getVideoFileNamesInfo(videoFileNames)
