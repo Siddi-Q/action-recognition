@@ -39,6 +39,13 @@ class Data():
                 count += 1
         return count
     
+    def getMaxFrameCount(self):
+        maxFrameCount = 0
+        for row in self.data:
+            if int(row[3]) > maxFrameCount:
+                maxFrameCount = int(row[3])
+        return maxFrameCount
+    
     # returns a list of paths to frames for a video
     @staticmethod
     def getFramesForVideo(dataRow):
@@ -47,6 +54,6 @@ class Data():
         frames        = sorted(framesPath.glob(videoFilename + '*')) # sorted list so that the frames are in 'sequential' order
         return frames
 
-##if __name__ == '__main__':
-##    d = Data()
-##    print(d.getDatasetCount("Test"))
+# if __name__ == '__main__':
+#     d = Data()
+#     print(d.getMaxFrameCount())
