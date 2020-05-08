@@ -10,16 +10,20 @@ import csv
 import codecs
 import os 
 import re
+import googleapiclient.discovery
 
 # Gets the class names
-def getClassNames(ucfVideosPath, numOfClasses):
-    #url = ucfVideosPath/"UCF_classnames.csv"
-    url = "https://storage.googleapis.com/action-recognition-dataset-1/UCF%20101%20MP4/UCF_classnames.csv"
-    with closing(requests.get(url, stream=True)) as r:
-        reader = csv.reader(codecs.iterdecode(r.iter_lines(), 'utf-8'), delimiter=',', quotechar='"')
-        #classNames is the list of all the rows items from the .csv
-        for classNames in reader: 
-            continue
+def getClassNames(numOfClasses):
+    #request to grab sub directory names in bucket
+    service = googleapiclient.discovery.build('storage', 'v1')
+    req = service.objects().list(bucket="action-recognition-dataset-1", prefix="UCF 101 MP4/", delimiter='/')
+    res = req.execute()
+    names = res['prefixes'] #list containing ["UCF 101 MP4/ApplyLipstick/"...]
+    classNames = []
+    for name in names :
+        name = re.sub("UCF 101 MP4/", '', name)
+        name = re.sub("/", '', name)
+        classNames.append(name)
     return classNames[:numOfClasses]
 
 def getVideoFilePaths(ucfVideosPath, classNames):
@@ -120,7 +124,7 @@ def main():
     directoryFunctions.removeDirectory(framesPath)
     directoryFunctions.removeDirectory(sequencesPath)
     
-    classNames         = getClassNames(ucfVideosPath, numOfClasses)
+    classNames         = getClassNames(numOfClasses)
     allVideoFilePaths  = getVideoFilePaths(ucfVideosPath, classNames)
     videoFileNames     = getVideoFileNames(allVideoFilePaths)
     videoFileNamesInfo = getVideoFileNamesInfo(videoFileNames)
