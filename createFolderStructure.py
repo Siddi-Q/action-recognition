@@ -4,40 +4,48 @@ import pathlib
 import shutil
 import csv
 
-# Gets the class names
+# Returns a list of class names i.e.:[ApplyEyeMakeup, ApplyLipstick, ...]
 def getClassNames(ucfVideosPath, numOfClasses):
-    directories = ucfVideosPath.glob('*')
+    directories = sorted(ucfVideosPath.glob('*'))
     classNames  = []
     for directory in directories:
         classNames.append(directory.name)
     return classNames[:numOfClasses]
 
 def getVideoFilePaths(ucfVideosPath, classNames):
-    videoClassPaths = []
-    for i in classNames:
-        videoClassPaths.append(ucfVideosPath/i)
+    videoClassPaths = {}
+    for className in classNames:
+            videoClassPaths[className] = ucfVideosPath/className
     
-    allVideoFilePaths = []
-    for j in videoClassPaths:
-        videoPathsList = list(j.glob('*.avi'))
-        allVideoFilePaths.extend(videoPathsList)
+    allVideoFilePaths = {}
+    for className in videoClassPaths:
+        allVideoFilePaths[className] = list(sorted(videoClassPaths[className].glob('*.avi')))
     return allVideoFilePaths
 
 def getVideoFileNames(allVideoFilePaths):
-    videoFileNames = []
-    for path in allVideoFilePaths:
-        videoFileNames.append(path.stem)
+    videoFileNames = {}
+    for className in allVideoFilePaths:
+        for videoFilePath in allVideoFilePaths[className]:
+            if className not in videoFileNames:
+                videoFileNames[className] = [videoFilePath.stem]
+            else:
+                videoFileNames[className].append(videoFilePath.stem)
     return videoFileNames
 
 def getVideoFileNamesInfo(videoFileNames):
-    videoFileNamesInfo = []
-    for videoFileName in videoFileNames:
-        videoFileNamesInfo.append(videoFileName.split('_'))
+    videoFileNamesInfo = {}
+    for className in videoFileNames:
+        for videoFileName in videoFileNames[className]:
+            if className not in videoFileNamesInfo:
+                videoFileNamesInfo[className] = [videoFileName.split('_')]
+            else:
+                videoFileNamesInfo[className].append(videoFileName.split('_'))
     return videoFileNamesInfo
-
+    
 def appendVideoFilePath(allVideoFilePaths, videoFileNamesInfo):
-    for i in range(len(allVideoFilePaths)):
-        videoFileNamesInfo[i].append(allVideoFilePaths[i])
+    for className in allVideoFilePaths:
+        for i in range(len(allVideoFilePaths[className])):
+            videoFileNamesInfo[className][i].append(allVideoFilePaths[className][i])
 
 def createDirectories(dirpath, classNames):
     directories = []
@@ -51,30 +59,30 @@ def createDirectories(dirpath, classNames):
 
 def generateTrainAndTestFrames(rootPath, framesPath, videoFileNamesInfo):
     data = []
-    for videoFileNameInfo in videoFileNamesInfo:
-        if videoFileNameInfo[2] > 'g10':
-            destinationPath = framesPath/'Train'
-            datasetType     = "Train"
-        elif videoFileNameInfo[2] > 'g05' and videoFileNameInfo[2] < 'g11':
-            destinationPath = framesPath/'Validation'
-            datasetType     = "Validation"
-        else:
-            destinationPath = framesPath/'Test'
-            datasetType     = "Test"
+    for className in videoFileNamesInfo:
+        for videoFileNameInfo in videoFileNamesInfo[className]:
+            if videoFileNameInfo[2] > 'g10':
+                destinationPath = framesPath/'Train'
+                datasetType     = "Train"
+            elif videoFileNameInfo[2] > 'g05' and videoFileNameInfo[2] < 'g11':
+                destinationPath = framesPath/'Validation'
+                datasetType     = "Validation"
+            else:
+                destinationPath = framesPath/'Test'
+                datasetType     = "Test"
             
-        destinationPath = str(destinationPath/videoFileNameInfo[1])
-        videoFilePath   = str(videoFileNameInfo[4])
-        videoFileName   = videoFileNameInfo[4].stem
-        
-        extractFrames.extractFrames(videoFilePath, videoFileName, destinationPath, 2, 3)
-        
-        numFrames = getNumFramesFromVideo(destinationPath, videoFileName)
-        data.append([datasetType, videoFileNameInfo[1], videoFileName, numFrames])
+            destinationPath = str(destinationPath/className)
+            videoFilePath   = str(videoFileNameInfo[4])
+            videoFileName   = videoFileNameInfo[4].stem
+            
+            extractFrames.extractFrames(videoFilePath, videoFileName, destinationPath, 2, 3)
+            numFrames = getNumFramesFromVideo(destinationPath, videoFileName)
+            data.append([datasetType, className, videoFileName, numFrames])
     writeDataToCsv(data, rootPath)
 
 def getNumFramesFromVideo(destinationPath, videoFileName):
     partialPath = pathlib.Path(destinationPath)
-    items       = list(partialPath.glob(videoFileName + '*.jpg'))
+    items       = list(sorted(partialPath.glob(videoFileName + '*.jpg')))
     return len(items)
 
 def writeDataToCsv(data, destinationPath):
@@ -108,9 +116,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
