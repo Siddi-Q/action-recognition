@@ -103,12 +103,14 @@ def extractFrames(videoFilePath, videoFileName, destinationPath, maxNumOfFrames,
     capturedFrameNumber = 0                                                     # Number of frames that have been captured so far
     frameIndex          = startFrameIndex                                       # Frame index that we want to go to
 
-    while(frameIndex < endFrameIndex and capturedFrameNumber < maxNumOfFrames):
+    while(frameIndex <= endFrameIndex and capturedFrameNumber < maxNumOfFrames):
         vidCap.set(cv2.CAP_PROP_POS_FRAMES, frameIndex)                         # Sets the (0-based) index of the frame that is going to be captured (See source #4)
         retVal, frame = vidCap.read()                                           # Grabs and returns the next video frame, and returns False if no frames were grabbed (See source #5)
         
         if retVal:                                                              # Check to see if a frame was successfully grabbed
-            fileName = destinationPath + "\\"    + \
+            #change to "\\" for local windows directory or "/" for GCS/Mac/Linux
+            #fileName = destinationPath + "\\"    + \
+            fileName = destinationPath + "/"    + \
                        videoFileName   + "_"    + \
                        str('%04d' % capturedFrameNumber) + \
                         '.jpg'                                                  # Create the path and filename that will be used to save the frame
