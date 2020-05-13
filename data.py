@@ -3,7 +3,7 @@ import pathlib
 
 class Data():
     def __init__(self):
-        self.dataCSVPath = pathlib.Path(r"D:\ActionRecognition\data.csv")
+        self.dataCSVPath = pathlib.Path(r"./data.csv")
         self.data = self.getData()
         self.classes = self.getClasses()
         self.numClasses = self.getNumClasses()
@@ -51,10 +51,10 @@ class Data():
     @staticmethod
     def getFramesForVideo(dataRow):
         videoFilename = dataRow[2]
-        framesPath    = pathlib.Path(r"D:\ActionRecognition\Frames")/dataRow[0]/dataRow[1]
+        framesPath    = pathlib.Path(r"./Frames")/dataRow[0]/dataRow[1]
         frames        = sorted(framesPath.glob(videoFilename + '*')) # sorted list so that the frames are in 'sequential' order
         return frames
 
-if __name__ == '__main__':
-    d = Data()
-    print(d.getMaxFrameCount())
+# if __name__ == '__main__':
+#     d = Data()
+#     print(d.getMaxFrameCount())
