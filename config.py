@@ -25,8 +25,8 @@ List of methods: n/a
 """
 class Config():
     def __init__(self):
-        self.numClasses     = 3
-        self.maxNumOfFrames = 2
+        self.numClasses     = 101
+        self.maxNumOfFrames = 10
         self.extractRate    = 3
         self.rootPath       = r"./"
         self.ucfVideosPath  = str(pathlib.Path(self.rootPath)/"UCF-101")
